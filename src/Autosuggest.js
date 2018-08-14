@@ -47,8 +47,8 @@ export default class Autosuggest extends Component {
         throw new Error("'inputProps' must have 'value'.");
       }
 
-      if (!inputProps.hasOwnProperty('onChange')) {
-        throw new Error("'inputProps' must have 'onChange'.");
+      if (!inputProps.hasOwnProperty('onInput')) {
+        throw new Error("'inputProps' must have 'onInput'.");
       }
     },
     shouldRenderSuggestions: PropTypes.func,
@@ -310,10 +310,10 @@ export default class Autosuggest extends Component {
   }
 
   maybeCallOnChange(event, newValue, method) {
-    const { value, onChange } = this.props.inputProps;
+    const { value, onInput } = this.props.inputProps;
 
     if (newValue !== value) {
-      onChange(event, { newValue, method });
+      onInput(event, { newValue, method });
     }
   }
 
@@ -401,7 +401,7 @@ export default class Autosuggest extends Component {
     if (focusInputOnSuggestionClick === true) {
       this.input.focus();
     } else {
-      this.onBlur();
+      this.onChange();
     }
 
     setTimeout(() => {
@@ -409,9 +409,9 @@ export default class Autosuggest extends Component {
     });
   };
 
-  onBlur = () => {
+  onChange = () => {
     const { inputProps, shouldRenderSuggestions } = this.props;
-    const { value, onBlur } = inputProps;
+    const { value, onChange } = inputProps;
     const highlightedSuggestion = this.getHighlightedSuggestion();
     const shouldRender = shouldRenderSuggestions(value);
 
@@ -424,7 +424,7 @@ export default class Autosuggest extends Component {
       isCollapsed: !shouldRender
     });
 
-    onBlur && onBlur(this.blurEvent, { highlightedSuggestion });
+    onChange && onChange(this.blurEvent, { highlightedSuggestion });
   };
 
   resetHighlightedSuggestionOnMouseLeave = () => {
@@ -514,7 +514,7 @@ export default class Autosuggest extends Component {
           }
         }
       },
-      onBlur: event => {
+      onChange: event => {
         if (this.justClickedOnSuggestionsContainer) {
           this.input.focus();
           return;
@@ -523,11 +523,11 @@ export default class Autosuggest extends Component {
         this.blurEvent = event;
 
         if (!this.justSelectedSuggestion) {
-          this.onBlur();
+          this.onChange();
           this.onSuggestionsClearRequested();
         }
       },
-      onChange: event => {
+      onInput: event => {
         const { value } = event.target;
         const shouldRender = shouldRenderSuggestions(value);
 
